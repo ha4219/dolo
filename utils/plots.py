@@ -125,7 +125,7 @@ class Annotator:
         return np.asarray(self.im)
 
 
-def feature_visualization(x, module_type, stage, n=32, save_dir=Path('runs/detect/exp')):
+def feature_visualization(x, module_type, stage, n=32, save_dir=Path('custom_runs/detect/exp')):
     """
     x:              Features to be visualized
     module_type:    Module type

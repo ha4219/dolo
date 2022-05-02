@@ -501,7 +501,7 @@ def run(
             m.export = True
 
     for _ in range(2):
-        y = model(im)  # dry runs
+        y = model(im)  # dry custom_runs
     shape = tuple(y[0].shape)  # model output shape
     LOGGER.info(f"\n{colorstr('PyTorch:')} starting from {file} with output shape {shape} ({file_size(file):.1f} MB)")
 

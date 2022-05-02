@@ -90,17 +90,17 @@ class Loggers():
             self.wandb = None
 
     def on_train_start(self):
-        # Callback runs on train start
+        # Callback custom_runs on train start
         pass
 
     def on_pretrain_routine_end(self):
-        # Callback runs on pre-train routine end
+        # Callback custom_runs on pre-train routine end
         paths = self.save_dir.glob('*labels*.jpg')  # training labels
         if self.wandb:
             self.wandb.log({"Labels": [wandb.Image(str(x), caption=x.name) for x in paths]})
 
     def on_train_batch_end(self, ni, model, imgs, targets, paths, plots):
-        # Callback runs on train batch end
+        # Callback custom_runs on train batch end
         if plots:
             if ni == 0:
                 if not self.opt.sync_bn:  # --sync known issue https://github.com/ultralytics/yolov5/issues/3754
@@ -115,23 +115,23 @@ class Loggers():
                 self.wandb.log({'Mosaics': [wandb.Image(str(f), caption=f.name) for f in files if f.exists()]})
 
     def on_train_epoch_end(self, epoch):
-        # Callback runs on train epoch end
+        # Callback custom_runs on train epoch end
         if self.wandb:
             self.wandb.current_epoch = epoch + 1
 
     def on_val_image_end(self, pred, predn, path, names, im):
-        # Callback runs on val image end
+        # Callback custom_runs on val image end
         if self.wandb:
             self.wandb.val_one_image(pred, predn, path, names, im)
 
     def on_val_end(self):
-        # Callback runs on val end
+        # Callback custom_runs on val end
         if self.wandb:
             files = sorted(self.save_dir.glob('val*.jpg'))
             self.wandb.log({"Validation": [wandb.Image(str(f), caption=f.name) for f in files]})
 
     def on_fit_epoch_end(self, vals, epoch, best_fitness, fi):
-        # Callback runs at the end of each fit (train+val) epoch
+        # Callback custom_runs at the end of each fit (train+val) epoch
         x = {k: v for k, v in zip(self.keys, vals)}  # dict
         if self.csv:
             file = self.save_dir / 'results.csv'
@@ -153,13 +153,13 @@ class Loggers():
             self.wandb.end_epoch(best_result=best_fitness == fi)
 
     def on_model_save(self, last, epoch, final_epoch, best_fitness, fi):
-        # Callback runs on model save event
+        # Callback custom_runs on model save event
         if self.wandb:
             if ((epoch + 1) % self.opt.save_period == 0 and not final_epoch) and self.opt.save_period != -1:
                 self.wandb.log_model(last.parent, self.opt, epoch, fi, best_model=best_fitness == fi)
 
     def on_train_end(self, last, best, plots, epoch, results):
-        # Callback runs on training end
+        # Callback custom_runs on training end
         if plots:
             plot_results(file=self.save_dir / 'results.csv')  # save results.png
         files = ['results.png', 'confusion_matrix.png', *(f'{x}_curve.png' for x in ('F1', 'PR', 'P', 'R'))]

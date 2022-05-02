@@ -1,4 +1,4 @@
-"""Utilities and tools for tracking runs with Weights & Biases."""
+"""Utilities and tools for tracking custom_runs with Weights & Biases."""
 
 import logging
 import os
@@ -69,7 +69,7 @@ def check_wandb_resume(opt):
     process_wandb_config_ddp_mode(opt) if RANK not in [-1, 0] else None
     if isinstance(opt.resume, str):
         if opt.resume.startswith(WANDB_ARTIFACT_PREFIX):
-            if RANK not in [-1, 0]:  # For resuming DDP runs
+            if RANK not in [-1, 0]:  # For resuming DDP custom_runs
                 entity, project, run_id, model_artifact_name = get_run_info(opt.resume)
                 api = wandb.Api()
                 artifact = api.artifact(entity + '/' + project + '/' + model_artifact_name + ':latest')
@@ -104,7 +104,7 @@ def process_wandb_config_ddp_mode(opt):
 
 
 class WandbLogger():
-    """Log training runs, datasets, models, and predictions to Weights & Biases.
+    """Log training custom_runs, datasets, models, and predictions to Weights & Biases.
 
     This logger sends information to W&B at wandb.ai. By default, this information
     includes hyperparameters, system configuration and metrics, model metrics,
@@ -147,8 +147,8 @@ class WandbLogger():
             if opt.resume.startswith(WANDB_ARTIFACT_PREFIX):
                 entity, project, run_id, model_artifact_name = get_run_info(opt.resume)
                 model_artifact_name = WANDB_ARTIFACT_PREFIX + model_artifact_name
-                assert wandb, 'install wandb to resume wandb runs'
-                # Resume wandb-artifact:// runs here| workaround for not overwriting wandb.config
+                assert wandb, 'install wandb to resume wandb custom_runs'
+                # Resume wandb-artifact:// custom_runs here| workaround for not overwriting wandb.config
                 self.wandb_run = wandb.init(id=run_id,
                                             project=project,
                                             entity=entity,
@@ -158,7 +158,7 @@ class WandbLogger():
         elif self.wandb:
             self.wandb_run = wandb.init(config=opt,
                                         resume="allow",
-                                        project='YOLOv5' if opt.project == 'runs/train' else Path(opt.project).stem,
+                                        project='YOLOv5' if opt.project == 'custom_runs/train' else Path(opt.project).stem,
                                         entity=opt.entity,
                                         name=opt.name if opt.name != 'exp' else None,
                                         job_type=job_type,
@@ -200,7 +200,7 @@ class WandbLogger():
         """
         assert wandb, 'Install wandb to upload dataset'
         config_path = self.log_dataset_artifact(opt.data, opt.single_cls,
-                                                'YOLOv5' if opt.project == 'runs/train' else Path(opt.project).stem)
+                                                'YOLOv5' if opt.project == 'custom_runs/train' else Path(opt.project).stem)
         with open(config_path, errors='ignore') as f:
             wandb_data_dict = yaml.safe_load(f)
         return wandb_data_dict
@@ -291,7 +291,7 @@ class WandbLogger():
             # epochs_trained = model_artifact.metadata.get('epochs_trained')
             total_epochs = model_artifact.metadata.get('total_epochs')
             is_finished = total_epochs is None
-            assert not is_finished, 'training is finished, can only resume incomplete runs.'
+            assert not is_finished, 'training is finished, can only resume incomplete custom_runs.'
             return modeldir, model_artifact
         return None, None
 

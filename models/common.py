@@ -651,12 +651,12 @@ class Detections:
     def show(self, labels=True):
         self.display(show=True, labels=labels)  # show results
 
-    def save(self, labels=True, save_dir='runs/detect/exp'):
-        save_dir = increment_path(save_dir, exist_ok=save_dir != 'runs/detect/exp', mkdir=True)  # increment save_dir
+    def save(self, labels=True, save_dir='custom_runs/detect/exp'):
+        save_dir = increment_path(save_dir, exist_ok=save_dir != 'custom_runs/detect/exp', mkdir=True)  # increment save_dir
         self.display(save=True, labels=labels, save_dir=save_dir)  # save results
 
-    def crop(self, save=True, save_dir='runs/detect/exp'):
-        save_dir = increment_path(save_dir, exist_ok=save_dir != 'runs/detect/exp', mkdir=True) if save else None
+    def crop(self, save=True, save_dir='custom_runs/detect/exp'):
+        save_dir = increment_path(save_dir, exist_ok=save_dir != 'custom_runs/detect/exp', mkdir=True) if save else None
         return self.display(crop=True, save=save, save_dir=save_dir)  # crop results
 
     def render(self, labels=True):
