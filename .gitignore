@@ -15,7 +15,7 @@
 *.HEIC
 *.mp4
 *.mov
-*.MOV
+*.MOV   `
 *.avi
 *.data
 *.json

@@ -5,14 +5,14 @@ import datetime
 
 from custom.customPath import _get_path_name, _mkdir_path, _plot_acc, _plot_loss
 from custom.dataloader import create_dataloader
-from custom.layers import FlattenLayer, VGGFCLowLayer, VGGSplitFCLowLayer
+from custom.layers import FlattenLayer, VGGFCLowLayer, EffFCLowLayer
 from custom.train_model import train_model
 from models.yolo import Model
 
-NAME = 'yoloVGGLow'
+NAME = 'yoloEFFLow'
 DEVICE = 'cuda:2'
 INPUT_SIZE = 320
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
 EPOCHS = 100
 NUM_CLASSES = 5
@@ -36,9 +36,8 @@ def main():
     device = DEVICE if torch.cuda.is_available() else 'cpu'
 
     model = nn.Sequential(
-        _model,
-        FlattenLayer(),
-        VGGFCLowLayer(_is_flatten=1, _input_size=INPUT_SIZE),
+        _model.to(device),
+        EffFCLowLayer(),
     )
 
     model.to(device)

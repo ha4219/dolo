@@ -43,5 +43,9 @@ import torch
 # import gc
 # gc.collect()
 # torch.cuda.empty_cache()
+from custom.layers import EffFCLowLayer
 
-print(torch.cuda.device_count())
+x = [torch.randn((1, 3, 80, 80, 85)), torch.randn((1, 3, 40, 40, 85)), torch.randn((1, 3, 20, 20, 85))]
+# x = x.permute(0, 1, 4, 2, 3)
+m = EffFCLowLayer()
+print(m(x).shape)

@@ -32,9 +32,9 @@ def create_dataloader(batch_size=16, workers=8, _in=320):
     loaders = {
         "train": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/new/train.csv", trfms),
                             shuffle=True, batch_size=batch_size,
-                            num_workers=nw, pin_memory=False),
+                            num_workers=nw, pin_memory=True),
         "val": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/new/test.csv", trfmsv),
                           shuffle=True, batch_size=batch_size,
-                          num_workers=nw, pin_memory=False)}
+                          num_workers=nw, pin_memory=True)}
 
     return loaders

@@ -21,7 +21,7 @@ NUM_CLASSES = 5
 def main():
     loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE)
 
-    weights = '../yolov5s.pt'
+    weights = '../best.pt'
     ckpt = torch.load(weights, map_location='cpu')
 
     csd = ckpt['model'].float().state_dict()
@@ -53,7 +53,7 @@ def main():
     _mkdir_path(path)
     _plot_acc(path, training_acc=ta, validation_acc=va)
     _plot_loss(path, training_loss=tl, validation_loss=vl)
-    torch.save(model, f"path/{NAME}.pt")
+    torch.save(model, f"{path}/{NAME}.pt")
     return
 
 
