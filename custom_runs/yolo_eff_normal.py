@@ -4,14 +4,14 @@ import torch.cuda
 import datetime
 
 from custom.customPath import _get_path_name, _mkdir_path, _plot_acc, _plot_loss
-from custom.dataloader import create_dataloader
+from custom.dataloader import create_dataloader, create_more_dataloader
 from custom.layers import FlattenLayer, VGGFCLowLayer, EffFCNormalLayer
 from custom.train_model import train_model
 from models.yolo import Model
 
-NAME = 'yoloEFFNormal'
+NAME = 'yoloHighResolutionEFFNormalAug'
 DEVICE = 'cuda:3'
-INPUT_SIZE = 320
+INPUT_SIZE = 640
 BATCH_SIZE = 32
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
 EPOCHS = 100
@@ -19,7 +19,7 @@ NUM_CLASSES = 5
 
 
 def main():
-    loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE)
+    loaders = create_more_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE)
 
     weights = '../best.pt'
     ckpt = torch.load(weights, map_location='cpu')

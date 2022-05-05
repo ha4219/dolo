@@ -11,8 +11,8 @@ from models.yolo import Model
 
 NAME = 'yoloEFFLow'
 DEVICE = 'cuda:2'
-INPUT_SIZE = 320
-BATCH_SIZE = 16
+INPUT_SIZE = 640
+BATCH_SIZE = 32
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
 EPOCHS = 100
 NUM_CLASSES = 5

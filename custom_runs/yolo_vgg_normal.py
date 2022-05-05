@@ -5,12 +5,12 @@ import datetime
 
 from custom.customPath import _get_path_name, _mkdir_path, _plot_acc, _plot_loss
 from custom.dataloader import create_dataloader
-from custom.layers import FlattenLayer, VGGFCLowLayer, VGGFCNormalLayer
+from custom.layers import FlattenLayer, VGGFCLowLayer, VGGFCNormalLayer, MaxPoolingFlattenLayer
 from custom.train_model import train_model
 from models.yolo import Model
 
-NAME = 'yoloVGGNormal'
-DEVICE = 'cuda:3'
+NAME = 'yoloMPVGGNormal'
+DEVICE = 'cuda:0'
 INPUT_SIZE = 320
 BATCH_SIZE = 32
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
@@ -32,13 +32,14 @@ def main():
     # feature extracting
     # for param in model.parameters():
     #     param.requires_grad = False
-
+    x2 = INPUT_SIZE * INPUT_SIZE
+    _in = 3 * (80 + 5) * (x2 // 256 + x2 // 1024 + x2 // 4096)
     device = DEVICE if torch.cuda.is_available() else 'cpu'
 
     model = nn.Sequential(
         _model,
-        FlattenLayer(),
-        VGGFCNormalLayer(_is_flatten=1, _input_size=INPUT_SIZE),
+        MaxPoolingFlattenLayer(),
+        VGGFCNormalLayer(_in=_in),
     )
 
     model.to(device)

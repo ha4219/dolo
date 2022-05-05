@@ -37,7 +37,7 @@ def _plot_acc(path: str, training_acc: list, validation_acc: list = None,
 
 def _plot_loss(path: str, training_loss: list, validation_loss: list = None,
                show: bool = True, save: bool = True):
-    title = f'{path}_acc'
+    title = f'{path}_loss'
     plt.figure(2)
     lm = max(training_loss)
     l = len(training_loss)

@@ -1,51 +1,47 @@
-from glob import glob
-# import csv
-#
-# dir_path = '/home/oem/lab/jdongha/data/new/test.csv'
-# cnt = 0
-# with open(dir_path, 'r') as f:
-#     rd = csv.reader(f)
-#     for line in rd:
-#         cnt +=1
-#         # images.append(line[0])
-#         # labels.append(int(line[1]))
-# print(cnt)
+from torchvision import transforms
 
-
-# transf
-# from torchvision import transforms
-# from PIL import Image
-# import matplotlib.pyplot as plt
-#
-#
-# trfms = transforms.Compose([
-#     # transforms.ToTensor(),
-#     # transforms.Resize([_in, _in]),
-#     # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-#     # transforms.ColorJitter(brightness=0, hue=0.5),
-#     transforms.RandomHorizontalFlip(),
-# ])
-#
-# path = "/home/oem/lab/jdongha/data/origin/1. ex-close(얼굴만)-5743/검은사제들-200/검은사제들.mp4_006010889.png"
-# # print(glob("/home/oem/lab/jdongha/data/origin/1. ex-close(얼굴만)-5743/검은사제들-200/*"))
-# img = Image.open(path)
-# # img.show()
-# # Image._show(img)
-# # plt.imshow(img)
-# # plt.show()
-# img = trfms(img)
-# print(img)
-# plt.imshow(img)
-# plt.show()`
-
-
+from custom.create_vision_model import initialize_model
 import torch
-# import gc
-# gc.collect()
-# torch.cuda.empty_cache()
-from custom.layers import EffFCLowLayer
 
-x = [torch.randn((1, 3, 80, 80, 85)), torch.randn((1, 3, 40, 40, 85)), torch.randn((1, 3, 20, 20, 85))]
-# x = x.permute(0, 1, 4, 2, 3)
-m = EffFCLowLayer()
-print(m(x).shape)
+from custom.dataset import CustomDatasetWithPath
+
+NUM_CLASSES = 5
+
+weights = 'custom_runs/2022-05-05-15:09:07_eff_Aug_100__adam_1e3/eff_Aug.pt'
+ckpt = torch.load(weights, map_location='cpu')
+csd = ckpt.float().state_dict()
+model, _in = initialize_model('efficient', NUM_CLASSES, False, True)
+model.load_state_dict(csd, strict=False)
+
+
+conf_thres = 0.25  # confidence threshold
+iou_thres = 0.45  # NMS IOU threshold
+max_det = 1000
+classes = 80
+agnostic_nms = False
+
+tf = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Resize([_in, _in]),
+])
+
+ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/new/test.csv', transform=tf)
+device = torch.device('cuda:0')
+model.to(device)
+model.eval()
+
+logs = []
+
+for i, (im, la, path) in enumerate(ds):
+    im = torch.reshape(im, (1, 3, _in, _in))
+    im = im.to(device)
+    pred = model(im)
+
+    if torch.argmax(pred.cpu()).item() != la:
+        logs.append(path)
+
+import csv
+
+with open('tmp/notMatched', 'w') as f:
+    wr = csv.writer(f)
+    wr.writerows(logs)

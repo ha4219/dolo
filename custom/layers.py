@@ -55,6 +55,28 @@ class EffFCNormalLayer(nn.Module):
         x = torch.cat((x0, x1, x2), 1)
         return self.fc(x)
 
+
+class MaxPoolingFlattenLayer(nn.Module):    # no
+    def __init__(self):
+        super().__init__()
+        self.mp = nn.MaxPool2d(2, 2)
+
+    def forward(self, x):
+        if not self.training:
+            x = x[1]
+        x0 = x[0].permute(0, 1, 4, 2, 3)
+        x1 = x[1].permute(0, 1, 4, 2, 3)
+        x2 = x[2].permute(0, 1, 4, 2, 3)
+        x0 = self.mp(x0)
+        x1 = self.mp(x1)
+        x2 = self.mp(x2)
+        x0 = torch.flatten(x0, 1, -1)
+        x1 = torch.flatten(x1, 1, -1)
+        x2 = torch.flatten(x2, 1, -1)
+        x = torch.cat((x0, x1, x2), 1)
+        return x
+
+
 class FlattenLayer(nn.Module):
     def __init__(self):
         super().__init__()
@@ -96,7 +118,6 @@ class VGGSplitFCLowLayer(nn.Module):
             nn.Dropout(0.5),
             nn.Linear(4096, _out),
         ])
-
 
     def forward(self, x):
         x = x.to('cuda:3')
@@ -180,4 +201,3 @@ class CustomPoolingOnlyConfidenceLayer(nn.Module):
         x2 = torch.flatten(x2, 1, -1)
         x = torch.cat((x0, x1, x2), 1)
         return x
-
