@@ -11,7 +11,7 @@ from utils.plots import Annotator, colors
 import cv2
 import numpy as np
 
-_in = 320
+_in = 640
 conf_thres = 0.25  # confidence threshold
 iou_thres = 0.45  # NMS IOU threshold
 max_det = 1000
@@ -23,12 +23,10 @@ tf = transforms.Compose([
     transforms.Resize([_in, _in]),
 ])
 
-ds = CustomDataset('/home/oem/lab/jdongha/data/new/test.csv', transform=tf)
+ds = CustomDataset('tmp/erroryoloHighEffNormal.csv', transform=tf)
 
 device = torch.device('cuda:3')
 model = DetectMultiBackend(weights='best.pt', device=device, dnn=False, data='data/coco128.yaml', fp16=False)
-
-# for im, la in ds:
 
 for i, (im, la) in enumerate(ds):
     im = torch.reshape(im, (1, 3, _in, _in))
@@ -43,7 +41,7 @@ for i, (im, la) in enumerate(ds):
     annotator = Annotator(im0, line_width=3, example=str(names))
 
     for j, det in enumerate(pred):
-        save_path = f'tmp/test{i}.png'
+        save_path = f'erroryoloHighEffNormal/{i}.png'
 
         if len(det):
             det[:, :4] = scale_coords(im.shape[2:], det[:, :4], im0.shape).round()

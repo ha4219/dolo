@@ -7,19 +7,14 @@ from custom.dataset import CustomDatasetWithPath
 import matplotlib.pyplot as plt
 
 NUM_CLASSES = 5
+NAME = 'yoloHighEffNormal'
 
-weights = 'custom_runs/2022-05-05-15:09:07_eff_Aug_100__adam_1e3/eff_Aug.pt'
+weights = '../custom_runs/2022-05-05-12:13:08_yoloHighResolutionEFFNormal_100__adam_1e3/yoloHighResolutionEFFNormal.pt'
 ckpt = torch.load(weights, map_location='cpu')
 csd = ckpt.float().state_dict()
-model, _in = initialize_model('efficient', NUM_CLASSES, False, True)
+model, _in = initialize_model(NAME, NUM_CLASSES, False, True)
 model.load_state_dict(csd, strict=False)
 
-
-conf_thres = 0.25  # confidence threshold
-iou_thres = 0.45  # NMS IOU threshold
-max_det = 1000
-classes = 80
-agnostic_nms = False
 
 tf = transforms.Compose([
     transforms.ToTensor(),
@@ -41,14 +36,14 @@ for i, (im, la, path) in enumerate(ds):
 
     if torch.argmax(pred.cpu()).item() != la:
         cnts[torch.argmax(pred.cpu()).item()] += 1
-        logs.append(path)
+        logs.append([path, la])
 
 plt.bar(['ex-close', 'close', 'full', 'long', 'ex-long'], cnts)
-plt.savefig('tmp/errorEff.png')
+plt.savefig(f'../tmp/error{NAME}.png')
 
 import csv
 
-with open('tmp/errorEff.csv', 'w') as f:
+with open(f'../tmp/error{NAME}.csv', 'w') as f:
     wr = csv.writer(f)
     for i, log in enumerate(logs):
-        wr.writerow([i, log])
+        wr.writerow(log)

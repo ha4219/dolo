@@ -1,6 +1,10 @@
 from torchvision import models
 import torch.nn as nn
 
+from custom.layers import EffFCNormalLayer
+from models.yolo import Model
+
+
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
         for param in model.parameters():
@@ -71,7 +75,7 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs,num_classes)
         input_size = 299
-        
+
     elif model_name == 'efficient':
         model_ft = models.efficientnet_b3(pretrained=use_pretrained)
         set_parameter_requires_grad(model_ft, feature_extract)
@@ -89,6 +93,13 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
             nn.Linear(1000, num_classes),
         )
         input_size = 224
+    elif model_name == 'yoloHighEffNormal':
+        model_ft = nn.Sequential(
+            Model(cfg='../models/yolov5s.yaml'),
+            EffFCNormalLayer(),
+        )
+        set_parameter_requires_grad(model_ft, feature_extract)
+        input_size = 640
     else:
         print("Invalid model name, exiting...")
         exit()
