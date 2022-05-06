@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.cuda
 
-NAME = 'eff_noAug'
+NAME = 'eff_noAni_noAug'
 DEVICE = 'cuda:2'
 INPUT_SIZE = 320
 BATCH_SIZE = 32

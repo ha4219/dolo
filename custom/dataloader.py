@@ -30,10 +30,10 @@ def create_dataloader(batch_size=16, workers=8, _in=320):
     nw = min([os.cpu_count() // max(nd, 1), batch_size if batch_size > 1 else 0, workers])
 
     loaders = {
-        "train": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/new/train.csv", trfms),
+        "train": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/noAni/train.csv", trfms),
                             shuffle=True, batch_size=batch_size,
                             num_workers=nw, pin_memory=True),
-        "val": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/new/test.csv", trfmsv),
+        "val": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/noAni/test.csv", trfmsv),
                           shuffle=True, batch_size=batch_size,
                           num_workers=nw, pin_memory=True)}
 
