@@ -20,8 +20,19 @@ import numpy as np
 # plt.xlabel('intensity')
 # plt.ylabel('cnt')
 # plt.savefig('../tmp/originIntensity.png')
+from custom.dataset import CustomDatasetWithPath
 
-img = Image.open('/home/oem/lab/jdongha/data/new/1/00303.png')
-img = np.array(img)
-w, h, _ = img.shape
-print(int(img.sum() / w / h))
+ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/new/test.csv')
+
+res = [0] * 11
+
+for img, label, path in ds:
+    # img = Image.open('/home/oem/lab/jdongha/data/noAni/0/3801.png')
+    img = np.array(img)
+    w, h, _ = img.shape
+    v = (img.sum() / w / h/755) * 100
+    if v>10:
+        continue
+    res[round(v)] = (path, v)
+
+print(res)

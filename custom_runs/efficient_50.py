@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.cuda
 
-NAME = 'eff_noAug'
-DEVICE = 'cuda:2'
+NAME = 'eff_noAni_noDark3'
+DEVICE = 'cuda:0'
 INPUT_SIZE = 320
 BATCH_SIZE = 32
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
@@ -18,7 +18,7 @@ NUM_CLASSES = 5
 def main():
     model, _in = initialize_model('efficient', NUM_CLASSES, False, True)
     INPUT_SIZE = _in
-    loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE)
+    loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE, name='noDark20')
 
     device = DEVICE if torch.cuda.is_available() else 'cpu'
 
