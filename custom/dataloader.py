@@ -7,7 +7,7 @@ import os
 from custom.dataset import CustomDataset
 
 
-def create_dataloader(batch_size=16, workers=8, _in=320):
+def create_dataloader(batch_size=16, workers=8, _in=320, name=''):
     trfms = transforms.Compose([
         transforms.ToTensor(),
         transforms.Resize([_in, _in]),
@@ -30,10 +30,10 @@ def create_dataloader(batch_size=16, workers=8, _in=320):
     nw = min([os.cpu_count() // max(nd, 1), batch_size if batch_size > 1 else 0, workers])
 
     loaders = {
-        "train": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/noAni/train.csv", trfms),
+        "train": DataLoader(CustomDataset(f"/home/oem/lab/jdongha/data/noAni/train{name}.csv", trfms),
                             shuffle=True, batch_size=batch_size,
                             num_workers=nw, pin_memory=True),
-        "val": DataLoader(CustomDataset("/home/oem/lab/jdongha/data/noAni/test.csv", trfmsv),
+        "val": DataLoader(CustomDataset(f"/home/oem/lab/jdongha/data/noAni/test{name}.csv", trfmsv),
                           shuffle=True, batch_size=batch_size,
                           num_workers=nw, pin_memory=True)}
 
