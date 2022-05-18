@@ -9,7 +9,7 @@ import torch.cuda
 NAME = 'eff_noAni_noDark3'
 DEVICE = 'cuda:0'
 INPUT_SIZE = 320
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
 EPOCHS = 100
 NUM_CLASSES = 5
@@ -17,8 +17,13 @@ NUM_CLASSES = 5
 
 def main():
     model, _in = initialize_model('efficient', NUM_CLASSES, False, True)
+    # weights = '../custom_runs/2022-05-07-04:07:07_eff_noAni_noAug_100__adam_1e3/eff_noAni_noAug.pt'
+    # ckpt = torch.load(weights, map_location='cpu')
+    # csd = ckpt.float().state_dict()
+    # model, _in = initialize_model('efficient', NUM_CLASSES, False, True)
+    # model.load_state_dict(csd, strict=False)
     INPUT_SIZE = _in
-    loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE, name='noDark20')
+    loaders = create_dataloader(_in=INPUT_SIZE, batch_size=BATCH_SIZE, name='noDark3')
 
     device = DEVICE if torch.cuda.is_available() else 'cpu'
 

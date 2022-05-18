@@ -69,13 +69,14 @@ def train_model(model, dataloaders, criterion, scheduler, optimizer, num_epochs=
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
+                        scheduler.step()
 
-                # statistics
+            # statistics
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
             epoch_loss = running_loss / len(dataloaders[phase].dataset)
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
-
+            print(running_corrects.double(), running_corrects, len(dataloaders[phase].dataset))
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 
             # deep copy the model
@@ -84,7 +85,7 @@ def train_model(model, dataloaders, criterion, scheduler, optimizer, num_epochs=
                 best_model_wts = copy.deepcopy(model.state_dict())
             if phase == 'val':
                 learning_rate_history.append(optimizer.param_groups[0]['lr'])
-                scheduler.step()
+
                 val_acc_history.append(epoch_acc.cpu().numpy())
                 val_loss_history.append(epoch_loss)
             else:
