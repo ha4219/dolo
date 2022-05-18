@@ -1,5 +1,6 @@
 import numpy as np
 from torchvision import transforms
+from tqdm import tqdm
 
 from custom.create_vision_model import initialize_model
 import torch
@@ -7,6 +8,7 @@ import torch
 from custom.dataset import CustomDatasetWithPath
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFile
+from torch.utils.data import DataLoader
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -30,27 +32,38 @@ tf = transforms.Compose([
     transforms.Resize([_in, _in]),
 ])
 
-ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/noAni/trainnoDark3.csv', transform=tf)
+ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/noAni/testnoDark3.csv', transform=tf)
+dl = DataLoader(ds, shuffle=True, batch_size=16, num_workers=4, pin_memory=True)
+
 device = torch.device('cuda:0')
 model.to(device)
 model.eval()
 
+pbar = tqdm(dl)
 
 logs = []
 cnts = [0] * 5
+cnt = 0
 
-for i, (im, la, path) in enumerate(ds):
-    im = torch.reshape(im, (1, 3, _in, _in))
+for i, (im, la, path) in enumerate(pbar):
+    # im = torch.reshape(im, (1, 3, _in, _in))
     im = im.to(device)
-    pred = model(im)
+    la = la.to(device)
+    outputs = model(im)
     # t = torch.argmax(pred.cpu()).item()
-    _, t = torch.max(pred, 1)
-    t = t.cpu().item()
-    if t != la:
-        cnts[t] += 1
-        logs.append((path, la, t))
+    _, t = torch.max(outputs, 1)
+    cnt += torch.sum(t==la.data)
+    t = t.cpu()
+    tmpla = la.cpu()
 
-print(len(ds), len(logs))
+    for i in range(len(t)):
+        # print(t[i],tmpla[i], t[i].numpy())
+        if t[i] == tmpla[i]:
+            cnts[t[i].numpy()] += 1
+            logs.append((path, tmpla[i].item(), t[i].item()))
+
+print(cnt.double()/len(dl.dataset), cnt.double(), len(dl.dataset))
+print(len(ds), len(logs), cnt)
 
 d = ['ex-close', 'close', 'full', 'long', 'ex-long']
 # plt.bar(['ex-close', 'close', 'full', 'long', 'ex-long'], cnts)
