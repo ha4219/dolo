@@ -32,7 +32,7 @@ tf = transforms.Compose([
     transforms.Resize([_in, _in]),
 ])
 
-ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/noAni/testnoDark3.csv', transform=tf)
+ds = CustomDatasetWithPath('/home/oem/lab/jdongha/data/noAni/testnoDark10.csv', transform=tf)
 dl = DataLoader(ds, shuffle=True, batch_size=16, num_workers=4, pin_memory=True)
 
 device = torch.device('cuda:0')
@@ -58,7 +58,7 @@ for i, (im, la, path) in enumerate(pbar):
 
     for i in range(len(t)):
         # print(t[i],tmpla[i], t[i].numpy())
-        if t[i] == tmpla[i]:
+        if t[i] != tmpla[i]:
             cnts[t[i].numpy()] += 1
             logs.append((path, tmpla[i].item(), t[i].item()))
 
@@ -87,13 +87,22 @@ for i in range(5):
 for path, truth, predict in logs:
     cnts[truth][predict] += 1
 
-plt.imshow(cnts)
+fig, ax = plt.subplots()
+
+ax.imshow(cnts)
 
 for i in range(5):
     for j in range(5):
-        text = plt.text(j, i, cnts[i][j],
+        text = ax.text(j, i, cnts[i][j],
                        ha="center", va="center", color="w")
 
+ax.set_title(f'acc: {cnt.double()/len(dl.dataset)} all')
+ax.set_ylabel('truth')
+ax.set_xlabel('predict')
+ax.set_xticks(np.arange(len(d)), labels=d)
+ax.set_yticks(np.arange(len(d)), labels=d)
+# plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+#          rotation_mode="anchor")
 plt.savefig('tmp/check.png')
 
 # import csv
