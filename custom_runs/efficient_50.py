@@ -1,17 +1,17 @@
 from custom.create_vision_model import initialize_model
 from custom.customPath import _get_path_name, _mkdir_path, _plot_acc, _plot_loss
 from custom.dataloader import create_dataloader, create_more_dataloader
-from custom.train_model import train_model
+from custom.train_basic_model import train_model
 import torch
 import torch.nn as nn
 import torch.cuda
 
 NAME = 'eff_noAni_noDark3'
-DEVICE = 'cuda:0'
+DEVICE = 'cuda:3'
 INPUT_SIZE = 320
 BATCH_SIZE = 16
 DESC = '100__adam_1e3'  # format: epoch__optimizer_lr_momentum_decay__tuning
-EPOCHS = 100
+EPOCHS = 50
 NUM_CLASSES = 5
 
 
@@ -29,7 +29,7 @@ def main():
 
     model.to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda epoch: 0.95 ** epoch)
     model, ta, va, tl, vl = train_model(model, loaders, nn.CrossEntropyLoss(),
                                         scheduler, optimizer, num_epochs=EPOCHS,
